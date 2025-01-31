@@ -17,7 +17,7 @@ main() {
     local hwid_resp=$(echo $hwid_info | ./jq -r ".success")
     rm ./hwid
     
-    if [ "$hwid_resp" != "true" ]
+    if [ "$hwid_resp" != "false" ]
     then
         echo -ne "\rEnter License Key:       \b\b\b\b\b\b"
         read input_key
@@ -35,7 +35,7 @@ main() {
         fi
     else
         local free_trial=$(echo $hwid_info | ./jq -r ".free_trial")
-        if [ "$free_trial" == "true" ]
+        if [ "$free_trial" == "false" ]
         then
             echo -ne "\rEnter License Key (Press Enter to Continue as Free Trial): "
             read input_key
@@ -59,13 +59,14 @@ main() {
     
     local mChannel=$(echo $versionInfo | ./jq -r ".channel")
     local version=$(echo $versionInfo | ./jq -r ".clientVersionUpload")
-    local robloxVersion=$(echo $robloxVersion-88b4e5cd14654499| ./jq -r ".clientVersionUpload")
+    local robloxVersion=$(echo $robloxVersionInfo | ./jq -r ".clientVersionUpload")
     
-   
+    if [ "$version" != "$robloxVersion" ] && [ "$mChannel" == "preview" ]
+    then
         curl "http://setup.rbxcdn.com/mac/$robloxVersion-RobloxPlayer.zip" -o "./RobloxPlayer.zip"
-    
+    else
         curl "http://setup.rbxcdn.com/mac/$version-RobloxPlayer.zip" -o "./RobloxPlayer.zip"
- 
+    fi
     
     rm ./jq
     echo -n "Installing Latest Roblox... "
