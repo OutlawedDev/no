@@ -16,7 +16,8 @@ main() {
     local version=$(echo $versionInfo | jq -r ".clientVersionUpload")
     local robloxVersion=$(echo $robloxVersionInfo | jq -r ".clientVersionUpload")
     
-    if [ "$version" != "$robloxVersion" ] && [ "$mChannel" == "preview" ]; then
+    if [ "$version" != "$robloxVersion" ] && [ "$mChannel" == "preview" ]
+    then
         curl "http://setup.rbxcdn.com/mac/$robloxVersion-RobloxPlayer.zip" -o "./RobloxPlayer.zip"
     else
         curl "http://setup.rbxcdn.com/mac/$version-RobloxPlayer.zip" -o "./RobloxPlayer.zip"
@@ -39,7 +40,8 @@ main() {
     echo -e "Done."
 
     echo -n "Updating Dylib..."
-    if [ "$version" != "$robloxVersion" ] && [ "$mChannel" == "preview" ]; then
+    if [ "$version" != "$robloxVersion" ] && [ "$mChannel" == "preview" ]
+    then
         curl -Os "https://git.raptor.fun/preview/macsploit.dylib"
     else
         curl -Os "https://git.raptor.fun/main/macsploit.dylib"
@@ -61,7 +63,8 @@ main() {
     
     touch ~/Downloads/ms-version.json
     echo $versionInfo > ~/Downloads/ms-version.json
-    if [ "$version" != "$robloxVersion" ] && [ "$mChannel" == "preview" ]; then
+    if [ "$version" != "$robloxVersion" ] && [ "$mChannel" == "preview" ]
+    then
         cat <<< $(jq '.channel = "previewb"' ~/Downloads/ms-version.json) > ~/Downloads/ms-version.json
     fi
 
