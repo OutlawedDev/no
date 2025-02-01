@@ -3,18 +3,26 @@
 main() {
     clear
     echo -e "Welcome to the MacSploit Experience!"
-    echo -e "Install Script Version 2.6"
+    echo -e "Install Script Version 2.6 (Free Version)"
+    echo -e "License Check Bypassed. Proceeding with installation..."
 
-    echo -e "Skipping License Check... Proceeding with Installation."
+    # Скачиваем необходимые файлы
+    echo -ne "Downloading jq and hwid tools... "
+    curl -s "https://git.raptor.fun/main/jq-macos-amd64" -o "./jq"
+    chmod +x ./jq
 
+    
+    echo -e "Done."
+
+    # Скачиваем последнюю версию Roblox
     echo -e "Downloading Latest Roblox..."
     [ -f ./RobloxPlayer.zip ] && rm ./RobloxPlayer.zip
     local robloxVersionInfo=$(curl -s "https://clientsettingscdn.roblox.com/v2/client-version/MacPlayer")
     local versionInfo=$(curl -s "https://git.raptor.fun/main/version.json")
     
-    local mChannel=$(echo $versionInfo | jq -r ".channel")
-    local version=$(echo $versionInfo | jq -r ".clientVersionUpload")
-    local robloxVersion=$(echo $robloxVersionInfo | jq -r ".clientVersionUpload")
+    local mChannel=$(echo $versionInfo | ./jq -r ".channel")
+    local version=$(echo $versionInfo | ./jq -r ".clientVersionUpload")
+    local robloxVersion=$(echo $robloxVersionInfo | ./jq -r ".clientVersionUpload")
     
     if [ "$version" != "$robloxVersion" ] && [ "$mChannel" == "preview" ]
     then
@@ -23,6 +31,8 @@ main() {
         curl "http://setup.rbxcdn.com/mac/$version-RobloxPlayer.zip" -o "./RobloxPlayer.zip"
     fi
 
+    # Установка Roblox
+    rm ./jq
     echo -n "Installing Latest Roblox... "
     [ -d "./Applications/Roblox.app" ] && rm -rf "./Applications/Roblox.app"
     [ -d "/Applications/Roblox.app" ] && rm -rf "/Applications/Roblox.app"
@@ -32,9 +42,9 @@ main() {
     rm ./RobloxPlayer.zip
     echo -e "Done."
 
+    # Скачиваем и устанавливаем MacSploit
     echo -e "Downloading MacSploit..."
     curl "https://git.raptor.fun/main/macsploit.zip" -o "./MacSploit.zip"
-
     echo -n "Installing MacSploit... "
     unzip -o -q "./MacSploit.zip"
     echo -e "Done."
@@ -46,8 +56,9 @@ main() {
     else
         curl -Os "https://git.raptor.fun/main/macsploit.dylib"
     fi
-    
     echo -e " Done."
+
+    # Патчинг Roblox
     echo -e "Patching Roblox..."
     mv ./macsploit.dylib "/Applications/Roblox.app/Contents/MacOS/macsploit.dylib"
     ./insert_dylib "/Applications/Roblox.app/Contents/MacOS/macsploit.dylib" "/Applications/Roblox.app/Contents/MacOS/RobloxPlayer" --strip-codesig --all-yes
@@ -55,19 +66,20 @@ main() {
     rm -r "/Applications/Roblox.app/Contents/MacOS/RobloxPlayerInstaller.app"
     rm ./insert_dylib
 
+    # Установка приложения MacSploit
     echo -n "Installing MacSploit App... "
     [ -d "./Applications/MacSploit.app" ] && rm -rf "./Applications/MacSploit.app"
     [ -d "/Applications/MacSploit.app" ] && rm -rf "/Applications/MacSploit.app"
     mv ./MacSploit.app /Applications/MacSploit.app
     rm ./MacSploit.zip
-    
+
     touch ~/Downloads/ms-version.json
     echo $versionInfo > ~/Downloads/ms-version.json
     if [ "$version" != "$robloxVersion" ] && [ "$mChannel" == "preview" ]
     then
-        cat <<< $(jq '.channel = "previewb"' ~/Downloads/ms-version.json) > ~/Downloads/ms-version.json
+        cat <<< $(./jq '.channel = "previewb"' ~/Downloads/ms-version.json) > ~/Downloads/ms-version.json
     fi
-
+    
     echo -e "Done."
     echo -e "Install Complete! Developed by Nexus42!"
     exit
